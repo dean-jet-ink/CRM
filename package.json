@@ -18,6 +18,9 @@
         "vue": "^3.4.0"
     },
     "dependencies": {
-        "dayjs": "^1.11.10"
+        "dayjs": "^1.11.10",
+        "micromodal": "^0.4.10",
+        "vue-material-design-icons": "^5.3.0",
+        "yubinbango-core2": "^0.6.3"
     }
 }
