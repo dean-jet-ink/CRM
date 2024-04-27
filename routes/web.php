@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnalysisController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ProfileController;
@@ -16,6 +17,10 @@ Route::resource('/customers', CustomerController::class)
 
 Route::resource('/purchases', PurchaseController::class)
     ->middleware(['auth', 'verified']);
+
+Route::get('/analysis', [AnalysisController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('analysis');
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [

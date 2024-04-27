@@ -75,7 +75,14 @@ defineProps({
                                     </thead>
                                     <tbody>
                                         <tr v-for="order in orders.data" :key="order.id">
-                                            <td class="px-4 py-3">{ order.id }</td>
+                                            <td class="px-4 py-3">
+                                                <Link
+                                                    :href="route('purchases.show', { purchase: order.id })"
+                                                    class="text-blue-500"
+                                                >
+                                                    {{ order.id }}
+                                                </Link>
+                                            </td>
                                             <td class="px-4 py-3">
                                                 {{ order.customer_name }}
                                             </td>

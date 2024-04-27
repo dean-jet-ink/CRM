@@ -72,7 +72,14 @@ class PurchaseController extends Controller
      */
     public function show(Purchase $purchase)
     {
-        //
+        $items = Order::where('id', $purchase->id)->get();
+
+        $order = Order::selectRaw('id, customer_name, sum(subtotal) as total, status, created_at, updated_at')
+            ->where('id', $purchase->id)
+            ->groupBy('id', 'customer_name', 'status', 'created_at', 'updated_at')
+            ->get();
+
+        return Inertia::render('Purchases/Show', ['items' => $items, 'order' => $order]);
     }
 
     /**
@@ -80,7 +87,14 @@ class PurchaseController extends Controller
      */
     public function edit(Purchase $purchase)
     {
-        //
+        $purchasedItems = $purchase->items()->get();
+
+        $order = Order::selectRaw('id, customer_id, customer_name, sum(subtotal) as total, status, created_at, updated_at')
+            ->where('id', $purchase->id)
+            ->groupBy('id', 'customer_name', 'status', 'created_at', 'updated_at')
+            ->get();
+
+        return Inertia::render('Purchases/Edit', ['items' => $purchasedItems, 'order' => $order]);
     }
 
     /**
@@ -88,7 +102,28 @@ class PurchaseController extends Controller
      */
     public function update(UpdatePurchaseRequest $request, Purchase $purchase)
     {
-        //
+        DB::beginTransaction();
+
+        try {
+            $purchase->update([
+                'status' => $request->status
+            ]);
+
+            $newItems = [];
+            foreach ($request->items as $item) {
+                $newItems[$item['id']] = ['quantity' => $item['quantity']];
+            }
+
+            $purchase->items()->sync($newItems);
+
+            DB::commit();
+
+            return to_route('purchases.index');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return Inertia::render('Dashboard')
+                ->with(['message' => '更新に失敗しました: ' . $e->getMessage()]);
+        }
     }
 
     /**
